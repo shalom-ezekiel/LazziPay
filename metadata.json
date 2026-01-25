@@ -1,0 +1,8 @@
+
+{
+  "name": "LazziPay ",
+  "description": "Voice-first fintech accessibility layer for African banks, featuring Voice-to-Intent and Panic Word detection.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
