@@ -4,7 +4,7 @@ import { PlanType } from '../types';
 import { 
   CheckCircle2, ArrowRight, Zap, Cpu, 
   Shield, MessageSquare, Activity, PlayCircle, 
-  Users, ServerCrash, Mic
+  Users, ServerCrash, Mic, Share2
 } from 'lucide-react';
 
 interface LandingProps {
@@ -24,11 +24,11 @@ const DashboardPreview = () => (
   <div className="mt-12 w-full max-w-5xl mx-auto perspective-1000 px-4">
     <div className="bg-white rounded-[1.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] border border-slate-200 overflow-hidden transform hover:-rotate-x-1 transition-transform duration-700">
       {/* Dashboard Image  */}
-      <div className="flex h-[320px]  overflow-hidden bg-slate-50">
+      <div className="flex overflow-hidden bg-slate-50">
         <img 
           src="/images/Dashboard.png" 
           alt="Lazzipay Dashboard Preview"
-          className="w-full h-full object-contain"
+          className="w-full h-auto object-cover block"
         />
       </div>
     </div>
@@ -54,7 +54,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
         <div className="max-w-6xl mx-auto text-center relative z-10 w-full">
           <div className="flex justify-center mb-6 opacity-0 animate-text-reveal stagger-1">
             <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md text-blue-700 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">
-              <Zap size={12} className="text-amber-500 fill-amber-500" /> Pioneering Fintech Accessibility
+              Pioneering Fintech Accessibility
             </span>
           </div>
           
@@ -182,7 +182,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               delay="stagger-1"
             />
             <ImpactCard 
-              icon={<Zap className="text-amber-500" size={32} />}
+              icon={<Share2 className="text-blue-500" size={32} />}
               title="Smart Routing"
               description="Prepares transfers faster and more efficiently by pre-fetching account metadata."
               delay="stagger-2"
@@ -214,8 +214,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
                   key={i} 
                   className="flex items-center gap-3 px-8 py-4 bg-white border border-slate-100 rounded-2xl transition-all duration-500 hover:shadow-lg hover:-translate-y-1 group/item cursor-default"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-blue-600/5 flex items-center justify-center group-hover/item:rotate-12 transition-transform">
-                    <Zap size={16} className="text-blue-600" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center">
                   </div>
                   <span className="text-slate-800 font-black text-base tracking-tight whitespace-nowrap">{item}</span>
                 </div>

@@ -23,8 +23,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
     { view: AppView.LANDING, label: 'Home', icon: <Home size={18} /> },
     { view: AppView.DEMO, label: 'Voice Demo', icon: <Mic size={18} /> },
     { view: AppView.DEVELOPER, label: 'Developer', icon: <Code2 size={18} /> },
-    { view: AppView.DASHBOARD, label: 'B2B Dashboard', icon: <BarChart3 size={18} /> },
-    { view: AppView.SETTINGS, label: 'Settings', icon: <SettingsIcon size={18} /> },
+    { view: AppView.SETTINGS, label: 'Features', icon: <SettingsIcon size={18} /> },
   ];
 
   return (

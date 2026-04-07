@@ -54,13 +54,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSignup, onBackToHome
           ))}
         </div>
 
-        <div className="p-4 bg-slate-900 rounded-xl flex items-center gap-3 border border-slate-800 mt-4">
-          <ShieldCheck className="text-blue-500 shrink-0" size={24} />
-          <div className="text-left">
-            <p className="text-white text-[9px] font-black uppercase tracking-widest leading-none">Bank Grade Security</p>
-            <p className="text-slate-400 text-[8px] mt-1 leading-tight">PCI-DSS Compliant Infrastructure</p>
-          </div>
-        </div>
+
       </div>
 
       {/* Right Form Panel */}
