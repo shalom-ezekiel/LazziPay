@@ -101,9 +101,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {item.icon}
-                {item.label}
-              </button>
+               {item.icon}
+               {item.label}
+               </button>
             ))}
             
             {/* Mobile Login/Signup */}

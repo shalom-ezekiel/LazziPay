@@ -6,7 +6,9 @@ export enum AppView {
   SETTINGS = 'SETTINGS',
   DEVELOPER = 'DEVELOPER',
   LOGIN = 'LOGIN',
-  SIGNUP = 'SIGNUP'
+  SIGNUP = 'SIGNUP',
+  FORGOT_PASSWORD = 'FORGOT_PASSWORD',
+  VERIFY_EMAIL = 'VERIFY_EMAIL',
 }
 
 export enum PlanType {

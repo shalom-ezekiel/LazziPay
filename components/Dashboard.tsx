@@ -3,12 +3,13 @@ import { PlanType } from '../types';
 import { 
   Home, Eye, MessageSquare, Users, AlertTriangle, PlayCircle, 
   Ticket, Heart, Radio, Activity, Search, Bell, ExternalLink, 
-  ChevronDown, UserCircle, LayoutDashboard, Zap, ShieldAlert,
+  ChevronDown, UserCircle, LayoutDashboard, Zap, ShieldAlert, LogOut,
   Mic, MousePointer2, AlertCircle, ServerCrash, CheckCircle2
 } from 'lucide-react';
 
 interface DashboardProps {
   plan: PlanType;
+  onLogout: () => void;
 }
 
 const LazziLogo = () => (
@@ -19,7 +20,7 @@ const LazziLogo = () => (
   </div>
 );
 
-const Dashboard: React.FC<DashboardProps> = ({ plan }) => {
+const Dashboard: React.FC<DashboardProps> = ({ plan, onLogout }) => {
   const [activeMenu, setActiveMenu] = useState('Overview');
 
   const isEnterprise = plan === PlanType.ENTERPRISE;
@@ -103,6 +104,12 @@ const Dashboard: React.FC<DashboardProps> = ({ plan }) => {
               </div>
               <p className="text-xs font-bold text-slate-800 mb-3">Admin Console</p>
               <button className="w-full bg-white border border-slate-200 text-slate-700 py-2 rounded-xl text-[10px] font-bold hover:bg-slate-100 transition shadow-sm active:scale-95 transform">Manage Billing</button>
+              <button
+                onClick={onLogout}
+                className="w-full mt-2 text-slate-500 py-2 rounded-xl text-[10px] font-bold hover:bg-white hover:text-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95 transform"
+              >
+                <LogOut size={12} /> Sign out
+              </button>
            </div>
         </div>
       </aside>

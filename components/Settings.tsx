@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UserSettings } from '../types';
 import { Shield, Clock, Volume2, User, Key } from 'lucide-react';

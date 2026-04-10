@@ -1,41 +1,132 @@
-
-import React from 'react';
-import { Mail, Lock, ArrowRight, Github, Chrome } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Lock, ArrowRight, Chrome, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
   onSwitchToSignup: () => void;
+  onSwitchToForgotPassword: () => void;
   onLogin: () => void;
+  onVerificationNeeded: () => void;
   onBackToHome: () => void;
 }
 
 const LazziLogo = ({ onClick }: { onClick: () => void }) => (
-  <div 
+  <div
     onClick={onClick}
     className="w-10 h-10 bg-gradient-to-br from-[#33C4CC] via-[#2D73E0] to-[#8D25D1] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 relative mx-auto mb-4 cursor-pointer hover:scale-105 transition-transform active:scale-95"
   >
     <div className="relative transform -translate-y-0.5 translate-x-0.5">
-      <div className="w-5 h-6 border-l-[4px] border-b-[4px] border-white rounded-bl-sm rounded-tr-xs rounded-br-md shadow-sm"></div>
+      <div className="w-5 h-6 border-l-[4px] border-b-[4px] border-white rounded-bl-sm rounded-br-md shadow-sm"></div>
     </div>
   </div>
 );
 
-const Login: React.FC<LoginProps> = ({ onSwitchToSignup, onLogin, onBackToHome }) => {
+const Login: React.FC<LoginProps> = ({
+  onSwitchToSignup,
+  onSwitchToForgotPassword,
+  onLogin,
+  onVerificationNeeded,
+  onBackToHome,
+}) => {
+  const { loginWithEmail, loginWithGoogle } = useAuth();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const getFriendlyAuthError = (code: string, fallback: string) => {
+    if (code === 'auth/network-request-failed') {
+      return 'Network problem. Check your internet connection and try again.';
+    }
+    if (code === 'auth/too-many-requests') {
+      return 'Too many failed attempts. Please try again later.';
+    }
+    return fallback;
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const user = await loginWithEmail(email, password);
+      if (!user.emailVerified) {
+        onVerificationNeeded();
+      } else {
+        onLogin();
+      }
+    } catch (err: any) {
+      const code = err?.code ?? '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError(getFriendlyAuthError(code, 'Login failed. Please try again.'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setGoogleLoading(true);
+    try {
+      // Google users are automatically verified
+      await loginWithGoogle();
+      onLogin();
+    } catch (err: any) {
+      const code = err?.code ?? '';
+      if (code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      if (code === 'auth/popup-blocked') {
+        setError('Google popup was blocked by the browser. Allow popups and try again.');
+      } else if (code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized in Firebase. Add your current domain in Firebase Authentication settings.');
+      } else if (code === 'auth/operation-not-allowed') {
+        setError('Google sign-in is not enabled in Firebase Authentication.');
+      } else {
+        setError(getFriendlyAuthError(code, 'Google login failed. Please try again.'));
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-[380px] bg-white rounded-[2rem] p-8 border border-slate-100 shadow-2xl shadow-slate-200 my-4">
+    <div className="w-full max-w-[400px] bg-white rounded-[2rem] p-8 border border-slate-100 shadow-2xl shadow-slate-200 my-4">
       <LazziLogo onClick={onBackToHome} />
       <div className="text-center mb-6">
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h2>
         <p className="text-slate-500 mt-1 text-xs font-medium">Continue to LazziPay</p>
       </div>
 
-      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+      {error && (
+        <div className="mb-4 flex items-start gap-2.5 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+          <AlertCircle size={16} className="text-red-500 mt-0.5 shrink-0" />
+          <p className="text-xs font-medium text-red-700">{error}</p>
+        </div>
+      )}
+
+      <form className="space-y-4" onSubmit={handleEmailLogin}>
         <div className="space-y-1.5">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+            Email Address
+          </label>
           <div className="relative group">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={18} />
-            <input 
-              type="email" 
+            <Mail
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+              size={18}
+            />
+            <input
+              id="login-email"
+              type="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 pl-10 pr-4 text-sm font-medium outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition shadow-inner"
               placeholder="name@company.com"
             />
@@ -44,48 +135,85 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup, onLogin, onBackToHome }
 
         <div className="space-y-1.5">
           <div className="flex justify-between items-end">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
-            <button type="button" className="text-[9px] font-bold text-blue-600 hover:underline uppercase tracking-tighter">Forgot?</button>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+              Password
+            </label>
+            <button
+              type="button"
+              onClick={onSwitchToForgotPassword}
+              className="text-[9px] font-bold text-blue-600 hover:underline uppercase tracking-tighter"
+            >
+              Forgot?
+            </button>
           </div>
           <div className="relative group">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={18} />
-            <input 
-              type="password" 
+            <Lock
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+              size={18}
+            />
+            <input
+              id="login-password"
+              type={showPassword ? 'text' : 'password'}
               required
-              className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 pl-10 pr-4 text-sm font-medium outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition shadow-inner"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 pl-10 pr-10 text-sm font-medium outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition shadow-inner"
               placeholder="••••••••"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
         </div>
 
-        <button 
+        <button
+          id="login-submit"
           type="submit"
-          className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition shadow-lg shadow-slate-200 active:scale-[0.98] transform group mt-2"
+          disabled={loading}
+          className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition shadow-lg shadow-slate-200 active:scale-[0.98] transform group mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Sign In <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          {loading ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <>
+              Sign In <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
         </button>
       </form>
 
       <div className="relative my-6 text-center">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-        <span className="relative bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Or login with</span>
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-100"></div>
+        </div>
+        <span className="relative bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          Or login with
+        </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <button className="flex items-center justify-center gap-2 py-2.5 border border-slate-100 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
-          <Chrome size={16} /> Google
-        </button>
-        <button className="flex items-center justify-center gap-2 py-2.5 border border-slate-100 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition">
-          <Github size={16} /> GitHub
-        </button>
-      </div>
+      <button
+        id="login-google"
+        type="button"
+        onClick={handleGoogleLogin}
+        disabled={googleLoading}
+        className="w-full flex items-center justify-center gap-2.5 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition mb-6 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {googleLoading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <>
+            <Chrome size={18} className="text-blue-500" /> Continue with Google
+          </>
+        )}
+      </button>
 
       <p className="text-center text-xs font-medium text-slate-500">
         New?{' '}
-        <button 
-          onClick={onSwitchToSignup}
-          className="text-blue-600 font-bold hover:underline"
-        >
+        <button onClick={onSwitchToSignup} className="text-blue-600 font-bold hover:underline">
           Create account
         </button>
       </p>
