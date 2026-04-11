@@ -9,7 +9,7 @@ import {
   sendPasswordResetEmail,
   signInWithPopup,
 } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase';
+import { auth, githubProvider, googleProvider } from '../firebase';
 
 interface AuthContextValue {
   user: User | null;
@@ -17,6 +17,7 @@ interface AuthContextValue {
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<User>;
   loginWithGoogle: () => Promise<User>;
+  loginWithGitHub: () => Promise<User>;
   resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
@@ -59,6 +60,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return cred.user;
   };
 
+  const loginWithGitHub = async (): Promise<User> => {
+    const cred = await signInWithPopup(auth, githubProvider);
+    return cred.user;
+  };
+
   const resetPassword = async (email: string): Promise<void> => {
     await sendPasswordResetEmail(auth, email);
   };
@@ -93,6 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signUpWithEmail,
         loginWithEmail,
         loginWithGoogle,
+        loginWithGitHub,
         resetPassword,
         logout,
         resendVerificationEmail,
