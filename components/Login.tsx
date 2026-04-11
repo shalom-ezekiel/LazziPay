@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, ArrowRight, Chrome, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Chrome, Github, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({
   onVerificationNeeded,
   onBackToHome,
 }) => {
-  const { loginWithEmail, loginWithGoogle } = useAuth();
+  const { loginWithEmail, loginWithGoogle, loginWithGitHub } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +36,7 @@ const Login: React.FC<LoginProps> = ({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [githubLoading, setGithubLoading] = useState(false);
 
   const getFriendlyAuthError = (code: string, fallback: string) => {
     if (code === 'auth/network-request-failed') {
@@ -85,14 +86,39 @@ const Login: React.FC<LoginProps> = ({
       if (code === 'auth/popup-blocked') {
         setError('Google popup was blocked by the browser. Allow popups and try again.');
       } else if (code === 'auth/unauthorized-domain') {
-        setError('This domain is not authorized in Firebase. Add your current domain in Firebase Authentication settings.');
+        setError('This sign-in method is unavailable on this app address right now. Please try another sign-in option.');
       } else if (code === 'auth/operation-not-allowed') {
-        setError('Google sign-in is not enabled in Firebase Authentication.');
+        setError('Google sign-in is temporarily unavailable. Please use email and password for now.');
       } else {
         setError(getFriendlyAuthError(code, 'Google login failed. Please try again.'));
       }
     } finally {
       setGoogleLoading(false);
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    setError('');
+    setGithubLoading(true);
+    try {
+      await loginWithGitHub();
+      onLogin();
+    } catch (err: any) {
+      const code = err?.code ?? '';
+      if (code === 'auth/popup-closed-by-user') {
+        return;
+      }
+      if (code === 'auth/popup-blocked') {
+        setError('GitHub popup was blocked by the browser. Allow popups and try again.');
+      } else if (code === 'auth/unauthorized-domain') {
+        setError('This sign-in method is unavailable on this app address right now. Please try another sign-in option.');
+      } else if (code === 'auth/operation-not-allowed') {
+        setError('GitHub sign-in is not ready yet. Please use Google or email and password for now.');
+      } else {
+        setError(getFriendlyAuthError(code, 'GitHub login failed. Please try again.'));
+      }
+    } finally {
+      setGithubLoading(false);
     }
   };
 
@@ -195,21 +221,39 @@ const Login: React.FC<LoginProps> = ({
         </span>
       </div>
 
-      <button
-        id="login-google"
-        type="button"
-        onClick={handleGoogleLogin}
-        disabled={googleLoading}
-        className="w-full flex items-center justify-center gap-2.5 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition mb-6 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {googleLoading ? (
-          <Loader2 size={16} className="animate-spin" />
-        ) : (
-          <>
-            <Chrome size={18} className="text-blue-500" /> Continue with Google
-          </>
-        )}
-      </button>
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <button
+          id="login-google"
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={googleLoading}
+          className="w-full flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {googleLoading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <>
+              <Chrome size={18} className="text-blue-500" /> Google
+            </>
+          )}
+        </button>
+
+        <button
+          id="login-github"
+          type="button"
+          onClick={handleGitHubLogin}
+          disabled={githubLoading}
+          className="w-full flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {githubLoading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <>
+              <Github size={18} className="text-slate-800" /> GitHub
+            </>
+          )}
+        </button>
+      </div>
 
       <p className="text-center text-xs font-medium text-slate-500">
         New?{' '}
