@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AppView, UserSettings, PlanType } from './types';
+import React, { useState } from 'react';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { PlanType, UserSettings } from './types';
 import Landing from './components/Landing';
 import VoiceDemo from './components/VoiceDemo';
 import Dashboard from './components/Dashboard';
@@ -22,15 +23,10 @@ const FooterLogo = () => (
   </div>
 );
 
-const HISTORY_STATE_KEY = 'appView';
-
-const isAppView = (value: unknown): value is AppView =>
-  typeof value === 'string' && Object.values(AppView).includes(value as AppView);
-
 const App: React.FC = () => {
   const { user, loading, logout } = useAuth();
-  const [currentView, setCurrentView] = useState<AppView>(AppView.LANDING);
-  const hasMountedRef = useRef(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [settings, setSettings] = useState<UserSettings>({
     userId: '12345',
     panicWord: 'Alaska',
@@ -39,55 +35,6 @@ const App: React.FC = () => {
     isLocked: false,
     selectedPlan: PlanType.CORE,
   });
-
-  const navigateToView = useCallback((view: AppView, options?: { replace?: boolean; scrollToTop?: boolean }) => {
-    setCurrentView(view);
-
-    const state = { [HISTORY_STATE_KEY]: view };
-    if (options?.replace) {
-      window.history.replaceState(state, '', window.location.href);
-    } else {
-      window.history.pushState(state, '', window.location.href);
-    }
-
-    if (options?.scrollToTop) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, []);
-
-  useEffect(() => {
-    window.history.replaceState({ [HISTORY_STATE_KEY]: AppView.LANDING }, '', window.location.href);
-    setCurrentView(AppView.LANDING);
-
-    const handlePopState = (event: PopStateEvent) => {
-      const nextView = event.state?.[HISTORY_STATE_KEY];
-      setCurrentView(isAppView(nextView) ? nextView : AppView.LANDING);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    hasMountedRef.current = true;
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (loading || !hasMountedRef.current) return;
-
-    if (user) {
-      if (!user.emailVerified) {
-        const needsVerificationGate =
-          currentView === AppView.DASHBOARD || currentView === AppView.VERIFY_EMAIL;
-
-        if (needsVerificationGate && currentView !== AppView.VERIFY_EMAIL) {
-          navigateToView(AppView.VERIFY_EMAIL, { replace: true });
-        }
-      }
-    } else if (currentView === AppView.DASHBOARD || currentView === AppView.VERIFY_EMAIL) {
-      navigateToView(AppView.LOGIN, { replace: true });
-    }
-  }, [currentView, loading, navigateToView, user]);
 
   const handlePanicTrigger = () => {
     setSettings((prev) => ({ ...prev, isLocked: true }));
@@ -98,17 +45,19 @@ const App: React.FC = () => {
   };
 
   const navigateToLanding = () => {
-    navigateToView(AppView.LANDING, { scrollToTop: true });
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePlanSelection = (plan: PlanType) => {
     setSettings((prev) => ({ ...prev, selectedPlan: plan }));
-    navigateToView(AppView.SIGNUP, { scrollToTop: true });
+    navigate('/signup');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleLogout = async () => {
     await logout();
-    navigateToView(AppView.LOGIN, { replace: true });
+    navigate('/login', { replace: true });
   };
 
   if (loading) {
@@ -138,158 +87,158 @@ const App: React.FC = () => {
     );
   }
 
-  const isAuthView =
-    currentView === AppView.LOGIN ||
-    currentView === AppView.SIGNUP ||
-    currentView === AppView.FORGOT_PASSWORD;
+  const isAuthPath =
+    location.pathname === '/login' ||
+    location.pathname === '/signup' ||
+    location.pathname === '/forgot-password';
+  const isDashboardPath = location.pathname === '/dashboard';
+  const isVerifyPath = location.pathname === '/verify-email';
 
-  const isDashboardView = currentView === AppView.DASHBOARD;
-  const isVerifyView = currentView === AppView.VERIFY_EMAIL;
+  const Footer = () => (
+    <footer className="bg-slate-950 text-slate-400 py-20 px-6 border-t border-slate-900">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+          <div className="lg:col-span-2">
+            <div className="flex items-center gap-3 mb-6 cursor-pointer" onClick={navigateToLanding}>
+              <FooterLogo />
+              <span className="font-bold text-white text-2xl tracking-tighter">LazziPay</span>
+            </div>
+            <p className="text-slate-500 max-w-sm mb-8 leading-relaxed">
+              LazziPay - Where insight and confidence meet intelligence, empowering businesses to detect,
+              understand, and resolve friction before trust breaks.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/signup')}
+                className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 transition"
+              >
+                Try for Free
+              </button>
+              <button
+                onClick={() => navigate('/demo')}
+                className="bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition"
+              >
+                Book a Demo
+              </button>
+            </div>
+          </div>
 
-  if (isVerifyView) {
+          <div>
+            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Product</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="#" className="hover:text-white transition">Features</a></li>
+              <li><a href="#" className="hover:text-white transition">Pricing</a></li>
+              <li><a href="#" className="hover:text-white transition">Ticketing</a></li>
+              <li><a href="#" className="hover:text-white transition">Developer</a></li>
+              <li><a href="#" className="hover:text-white transition">Integrations</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Company</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="#" className="hover:text-white transition">Blog</a></li>
+              <li><a href="#" className="hover:text-white transition">Contact</a></li>
+              <li><a href="#" className="hover:text-white transition">About Us</a></li>
+              <li><a href="#" className="hover:text-white transition">Careers</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Resources</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              <li><a href="#" className="hover:text-white transition">FAQs</a></li>
+              <li><a href="#" className="hover:text-white transition">Help Center</a></li>
+              <li><a href="#" className="hover:text-white transition">LazziPay</a></li>
+              <li><a href="#" className="hover:text-white transition">Case Studies</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-12 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-xs text-slate-600 font-medium">
+            © 2026 LazziPay. All rights reserved. <span className="mx-2">|</span>
+            <a href="#" className="hover:text-white transition">Privacy Policy</a>{' '}
+            <span className="mx-2">|</span>
+            <a href="#" className="hover:text-white transition">Terms of Service</a>
+          </p>
+          <div className="flex gap-6 opacity-40 grayscale hover:grayscale-0 transition duration-500">
+            <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
+            <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
+            <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+
+  const ProtectedDashboard = () => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    if (!user.emailVerified) {
+      return <Navigate to="/verify-email" replace />;
+    }
+    return <Dashboard plan={settings.selectedPlan} onLogout={handleLogout} />;
+  };
+
+  const VerifyEmailGate = () => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+    if (user.emailVerified) {
+      return <Navigate to="/dashboard" replace />;
+    }
     return (
       <EmailVerification
-        onVerified={() => navigateToView(AppView.DASHBOARD, { replace: true })}
-        onBackToLogin={() => navigateToView(AppView.LOGIN, { replace: true })}
+        onVerified={() => navigate('/dashboard', { replace: true })}
+        onBackToLogin={() => navigate('/login', { replace: true })}
       />
     );
-  }
-
-  const renderView = () => {
-    switch (currentView) {
-      case AppView.LANDING:
-        return <Landing onPlanSelected={handlePlanSelection} />;
-      case AppView.DEMO:
-        return <VoiceDemo settings={settings} onPanic={handlePanicTrigger} />;
-      case AppView.DEVELOPER:
-        return <DeveloperDocs />;
-      case AppView.DASHBOARD:
-        return <Dashboard plan={settings.selectedPlan} onLogout={handleLogout} />;
-      case AppView.SETTINGS:
-        return <Settings settings={settings} setSettings={setSettings} />;
-      case AppView.LOGIN:
-        return (
-          <Login
-            onSwitchToSignup={() => navigateToView(AppView.SIGNUP)}
-            onSwitchToForgotPassword={() => navigateToView(AppView.FORGOT_PASSWORD)}
-            onLogin={() => navigateToView(AppView.DASHBOARD, { replace: true })}
-            onVerificationNeeded={() => navigateToView(AppView.VERIFY_EMAIL, { replace: true })}
-            onBackToHome={navigateToLanding}
-          />
-        );
-      case AppView.SIGNUP:
-        return (
-          <Signup
-            onSwitchToLogin={() => navigateToView(AppView.LOGIN)}
-            onSignup={() => navigateToView(AppView.VERIFY_EMAIL, { replace: true })}
-            onBackToHome={navigateToLanding}
-            selectedPlan={settings.selectedPlan}
-          />
-        );
-      case AppView.FORGOT_PASSWORD:
-        return (
-          <ForgotPassword
-            onBackToLogin={() => navigateToView(AppView.LOGIN)}
-            onBackToHome={navigateToLanding}
-          />
-        );
-      default:
-        return <Landing onPlanSelected={handlePlanSelection} />;
-    }
   };
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-900 bg-slate-50 transition-colors">
-      {!isAuthView && !isDashboardView && (
-        <Header currentView={currentView} setView={navigateToView} />
-      )}
+      {!isAuthPath && !isDashboardPath && !isVerifyPath && <Header />}
 
-      <main className={`flex-grow ${isAuthView ? 'flex items-center justify-center overflow-y-auto' : ''}`}>
-        {renderView()}
+      <main className={`flex-grow ${isAuthPath ? 'flex items-center justify-center overflow-y-auto' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Landing onPlanSelected={handlePlanSelection} />} />
+          <Route path="/demo" element={<VoiceDemo settings={settings} onPanic={handlePanicTrigger} />} />
+          <Route path="/developer" element={<DeveloperDocs />} />
+          <Route path="/features" element={<Settings settings={settings} setSettings={setSettings} />} />
+          <Route path="/login" element={
+            <Login
+              onSwitchToSignup={() => navigate('/signup')}
+              onSwitchToForgotPassword={() => navigate('/forgot-password')}
+              onLogin={() => navigate('/dashboard', { replace: true })}
+              onVerificationNeeded={() => navigate('/verify-email', { replace: true })}
+              onBackToHome={navigateToLanding}
+            />
+          } />
+          <Route path="/signup" element={
+            <Signup
+              onSwitchToLogin={() => navigate('/login')}
+              onSignup={() => navigate('/verify-email', { replace: true })}
+              onBackToHome={navigateToLanding}
+              selectedPlan={settings.selectedPlan}
+            />
+          } />
+          <Route path="/forgot-password" element={
+            <ForgotPassword
+              onBackToLogin={() => navigate('/login')}
+              onBackToHome={navigateToLanding}
+            />
+          } />
+          <Route path="/verify-email" element={<VerifyEmailGate />} />
+          <Route path="/dashboard" element={<ProtectedDashboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       <ChatWidget />
 
-      {!isAuthView && !isDashboardView && (
-        <footer className="bg-slate-950 text-slate-400 py-20 px-6 border-t border-slate-900">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-              <div className="lg:col-span-2">
-                <div
-                  className="flex items-center gap-3 mb-6 cursor-pointer"
-                  onClick={navigateToLanding}
-                >
-                  <FooterLogo />
-                  <span className="font-bold text-white text-2xl tracking-tighter">LazziPay</span>
-                </div>
-                <p className="text-slate-500 max-w-sm mb-8 leading-relaxed">
-                  LazziPay - Where insight and confidence meet intelligence, empowering businesses to detect,
-                  understand, and resolve friction before trust breaks.
-                </p>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => navigateToView(AppView.SIGNUP)}
-                    className="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 transition"
-                  >
-                    Try for Free
-                  </button>
-                  <button
-                    onClick={() => navigateToView(AppView.DEMO)}
-                    className="bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition"
-                  >
-                    Book a Demo
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Product</h4>
-                <ul className="space-y-4 text-sm font-medium">
-                  <li><a href="#" className="hover:text-white transition">Features</a></li>
-                  <li><a href="#" className="hover:text-white transition">Pricing</a></li>
-                  <li><a href="#" className="hover:text-white transition">Ticketing</a></li>
-                  <li><a href="#" className="hover:text-white transition">Developer</a></li>
-                  <li><a href="#" className="hover:text-white transition">Integrations</a></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Company</h4>
-                <ul className="space-y-4 text-sm font-medium">
-                  <li><a href="#" className="hover:text-white transition">Blog</a></li>
-                  <li><a href="#" className="hover:text-white transition">Contact</a></li>
-                  <li><a href="#" className="hover:text-white transition">About Us</a></li>
-                  <li><a href="#" className="hover:text-white transition">Careers</a></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-widest">Resources</h4>
-                <ul className="space-y-4 text-sm font-medium">
-                  <li><a href="#" className="hover:text-white transition">FAQs</a></li>
-                  <li><a href="#" className="hover:text-white transition">Help Center</a></li>
-                  <li><a href="#" className="hover:text-white transition">LazziPay</a></li>
-                  <li><a href="#" className="hover:text-white transition">Case Studies</a></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="pt-12 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-6">
-              <p className="text-xs text-slate-600 font-medium">
-                © 2026 LazziPay. All rights reserved. <span className="mx-2">|</span>
-                <a href="#" className="hover:text-white transition">Privacy Policy</a>{' '}
-                <span className="mx-2">|</span>
-                <a href="#" className="hover:text-white transition">Terms of Service</a>
-              </p>
-              <div className="flex gap-6 opacity-40 grayscale hover:grayscale-0 transition duration-500">
-                <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
-                <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
-                <div className="w-6 h-6 bg-slate-400 rounded-sm"></div>
-              </div>
-            </div>
-          </div>
-        </footer>
-      )}
+      {!isAuthPath && !isDashboardPath && !isVerifyPath && <Footer />}
     </div>
   );
 };
