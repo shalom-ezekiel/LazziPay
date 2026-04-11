@@ -2,6 +2,8 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { VoiceIntent } from "./types";
 
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+
 export async function extractIntent(text: string, panicWord: string): Promise<VoiceIntent> {
   if (text.toLowerCase().includes(panicWord.toLowerCase())) {
     return {
@@ -10,7 +12,12 @@ export async function extractIntent(text: string, panicWord: string): Promise<Vo
     };
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  if (!GEMINI_API_KEY) {
+    console.error("Missing VITE_GEMINI_API_KEY. Add it to your environment variables.");
+    return { action: 'unknown', confidence: 0 };
+  }
+
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
   try {
     const response = await ai.models.generateContent({
@@ -53,7 +60,12 @@ export async function extractIntent(text: string, panicWord: string): Promise<Vo
 let audioCtx: AudioContext | null = null;
 
 export async function speakText(text: string): Promise<void> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  if (!GEMINI_API_KEY) {
+    console.error("Missing VITE_GEMINI_API_KEY. Add it to your environment variables.");
+    return;
+  }
+
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
   try {
     const response = await ai.models.generateContent({
