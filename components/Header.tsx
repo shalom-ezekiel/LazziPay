@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Mic, Code2, Settings as SettingsIcon, Menu, X } from 'lucide-react';
 
 const LazziLogo = () => (
-  <div className="w-10 h-10 bg-gradient-to-br from-[#33C4CC] via-[#2D73E0] to-[#8D25D1] rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20 relative overflow-hidden">
+  <div className="w-8 h-8 bg-gradient-to-br from-[#33C4CC] via-[#2D73E0] to-[#8D25D1] rounded-lg flex items-center justify-center relative overflow-hidden">
     <div className="relative transform -translate-y-0.5 translate-x-0.5">
-      <div className="w-5 h-6 border-l-[5px] border-b-[5px] border-white rounded-bl-md rounded-tr-sm rounded-br-lg shadow-sm"></div>
+      <div className="w-3.5 h-4 border-l-[3.5px] border-b-[3.5px] border-white rounded-bl-sm rounded-tr-sm rounded-br-md"></div>
     </div>
   </div>
 );
@@ -17,15 +17,28 @@ const navItems = [
   { to: '/features', label: 'Features', icon: <SettingsIcon size={18} /> },
 ];
 
-const getNavClasses = (isActive: boolean) =>
-  `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-    isActive ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-100'
+const getNavClasses = (isActive: boolean, scrolled: boolean) =>
+  `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+    isActive
+      ? 'bg-blue-50 text-blue-600'
+      : scrolled
+        ? 'text-slate-600 hover:bg-slate-100'
+        : 'text-slate-600 hover:text-blue-600'
   }`;
 
 const Header: React.FC = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const closeMenuAndNavigate = (to: string) => {
     navigate(to);
@@ -33,17 +46,23 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4">
+    <div className={`sticky top-0 z-50 w-full transition-all duration-500 ease-out ${
+      scrolled ? 'px-6 pt-3' : 'px-6'
+    }`}>
+      <header
+        className={`transition-all duration-500 ease-out mx-auto ${
+          scrolled
+            ? 'max-w-5xl bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-200/30 border border-slate-200/60 rounded-full px-6 py-2.5'
+            : 'max-w-7xl bg-transparent px-0 py-5'
+        }`}
+      >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <button
           className="flex items-center gap-2 cursor-pointer group bg-transparent border-0 p-0"
           onClick={() => navigate('/')}
         >
           <LazziLogo />
-          <div>
-            <h1 className="font-bold text-xl tracking-tight text-slate-900 leading-none group-hover:text-blue-600 transition-colors">LazziPay</h1>
-            <span className="text-[10px] uppercase tracking-widest text-blue-600 font-bold">Accessibility API</span>
-          </div>
+          <span className="font-bold text-xl tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">LazziPay</span>
         </button>
 
         <nav className="hidden lg:flex items-center gap-1">
@@ -52,7 +71,7 @@ const Header: React.FC = () => {
               key={item.to}
               to={item.to}
               end={item.exact}
-              className={({ isActive }) => getNavClasses(isActive)}
+              className={({ isActive }) => getNavClasses(isActive, scrolled)}
             >
               {item.icon}
               {item.label}
@@ -128,7 +147,9 @@ const Header: React.FC = () => {
         />
       )}
     </header>
+    </div>
   );
 };
 
 export default Header;
+
