@@ -35,13 +35,13 @@ export interface PartnerBrandColors {
 
 export interface PartnerConfig {
   partnerId: string;
-  assistantName: string;          // "Kuda AI", "PHCN Helper", "PiggyBot"
+  assistantName: string;          // "Acme AI", "Volt Helper", "Trivot"
   industry: IndustryType;
   brandColors: PartnerBrandColors;
   logo?: string;                  // URL to partner logo
   voicePreference: 'male' | 'female';
   allowedIntents?: string[];      // subset of industry intents (null = all)
-  welcomeMessage: string;         // "Hi! I'm Kuda AI, how can I help?"
+  welcomeMessage: string;         // "Hi! I'm Acme AI, how can I help?"
   customInstructions?: string;    // extra prompt context for the AI
   widgetPosition?: 'bottom-right' | 'bottom-left';
   widgetSize?: 'compact' | 'standard' | 'large';

@@ -42,10 +42,10 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
   const [activeUseCase, setActiveUseCase] = useState<string>('banking');
 
   const integrations = [
-    "Kuda", "PayPorte", "Access Bank", "Zenith", "Piggyvest", "Paystack", 
-    "Customer Experience Africa", "Eko Electricity", 
-    "FIRS", "NSITF", "Gokada", "Travel", 
-    "Leadway Assurance", "AXA Mansard"
+    "Arcline", "Vantage", "NovaPay", "Trivot", "Savora", "Streamline", 
+    "ClearPath CX", "Volt Grid", 
+    "Apex Gov", "TrustNet", "FleetRun", "Voyager", 
+    "Sentinel Insurance", "CoreShield"
   ];
 
   return (
@@ -97,7 +97,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
           <p className="text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.4em] mb-8">Trusted by leading finance companies</p>
           <div className="flex overflow-hidden relative group">
             <div className="flex gap-16 animate-marquee whitespace-nowrap py-4 items-center">
-              {['Kuda Bank', 'Opay', 'Moniepoint', 'Flutterwave', 'Interswitch', 'GTBank', 'Eko Electricity', 'PiggyVest'].map((name, i) => (
+              {['Arcline Bank', 'NovaPay', 'Streamline', 'Vantage', 'CoreNet', 'Apex Bank', 'Volt Grid', 'Trivot'].map((name, i) => (
                 <div key={i} className="flex items-center gap-3 text-slate-300 font-black text-xl transition-all duration-700 cursor-default hover:text-blue-600">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200"></div>
                   {name}
@@ -442,7 +442,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
             {/* Scrolling icons layer */}
             <div className="absolute inset-0 overflow-hidden">
               <div className="flex items-center h-full animate-integrations-scroll">
-                {[...['Paystack', 'Flutterwave', 'Kuda', 'Mono', 'Firebase', 'Interswitch', 'GTBank', 'Access', 'Zenith', 'Opay', 'Moniepoint', 'Piggyvest'], ...['Paystack', 'Flutterwave', 'Kuda', 'Mono', 'Firebase', 'Interswitch', 'GTBank', 'Access', 'Zenith', 'Opay', 'Moniepoint', 'Piggyvest']].map((name, i) => (
+                {[...['Streamline', 'Vantage', 'Arcline', 'Linkage', 'Firebase', 'CoreNet', 'Apex', 'NovaPay', 'Trivot', 'FleetRun', 'Savora', 'ClearPath'], ...['Streamline', 'Vantage', 'Arcline', 'Linkage', 'Firebase', 'CoreNet', 'Apex', 'NovaPay', 'Trivot', 'FleetRun', 'Savora', 'ClearPath']].map((name, i) => (
                   <div key={i} className="w-14 h-14 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-center text-slate-400 text-[10px] font-bold shrink-0 mx-3 hover:shadow-lg transition-shadow cursor-default">
                     {name.slice(0, 2).toUpperCase()}
                   </div>

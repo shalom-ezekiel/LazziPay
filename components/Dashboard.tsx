@@ -122,7 +122,7 @@ const Dashboard: React.FC<DashboardProps> = ({ plan, onLogout }) => {
                   value={config.assistantName}
                   onChange={e => updateConfig({ assistantName: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition"
-                  placeholder="e.g. Kuda AI, PiggyBot..."
+                  placeholder="e.g. Acme AI, Trivot..."
                 />
               </div>
 
