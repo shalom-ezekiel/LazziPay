@@ -14,7 +14,7 @@ const DeveloperDocs: React.FC = () => {
   };
 
   const navItems = [
-    { id: 'quick-start', title: 'Quick Start', icon: <Play size={18} /> },
+    { id: 'quick-start', title: 'Install the SDK', icon: <Play size={18} /> },
     { id: 'api-keys', title: 'API Keys', icon: <Key size={18} /> },
     { id: 'users-contacts', title: 'Users / Contacts', icon: <User size={18} /> },
     { id: 'transactions', title: 'Transactions', icon: <CreditCard size={18} /> },
@@ -27,20 +27,19 @@ const DeveloperDocs: React.FC = () => {
       case 'quick-start':
         return (
           <div className="animate-in fade-in duration-500">
-            <h1 className="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">QUICK START 👋</h1>
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Welcome to the LazziPay API Docs</h2>
+            <h1 className="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Integrate Lazzi into your app</h1>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-              Welcome to the official LazziPay Developer Documentation! Here you’ll find everything you need to integrate LazziPay into your apps to enable safe, voice-first money transfers with AI-assisted confirmations.
+              Lazzi is designed to be simple to add, while giving you full control over how voice intents are handled in your backend.
             </p>
             
             <div className="bg-blue-50 p-8 rounded-[2rem] border border-blue-100 mb-10 shadow-sm">
-              <h3 className="font-bold text-blue-900 mb-6 text-lg">LazziPay helps developers:</h3>
+              <h3 className="font-bold text-blue-900 mb-6 text-lg">With Lazzi, you can:</h3>
               <ul className="space-y-4">
                 {[
-                  'Ensure transfers are accurate and verified',
-                  'Automate voice-command handling in apps',
-                  'Track transactions and feedback for analytics',
-                  'Integrate with existing internal tools or dashboards'
+                  'Let users complete actions by speaking naturally',
+                  'Classify voice intents for banking, savings, and payments',
+                  'Handle sensitive actions securely with your own verification',
+                  'Fully brand the experience to match your product'
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4 text-slate-700">
                     <div className="mt-1 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
