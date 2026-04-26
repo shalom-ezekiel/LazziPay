@@ -41,10 +41,23 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSignup, onBackToHome
   const [githubLoading, setGithubLoading] = useState(false);
 
   const getFriendlyAuthError = (code: string, fallback: string) => {
-    if (code === 'auth/network-request-failed') {
-      return 'Network problem. Check your internet connection and try again.';
+    const knownMessages: Record<string, string> = {
+      'auth/network-request-failed': 'Network problem. Check your internet connection and try again.',
+      'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
+      'auth/unauthorized-domain': 'This website is not authorized for Firebase sign-in yet. Add the live domain in Firebase Authorized Domains.',
+      'auth/operation-not-allowed': 'This sign-in provider is disabled in Firebase Authentication.',
+      'auth/invalid-api-key': 'The live Firebase API key is invalid or missing.',
+      'auth/app-not-authorized': 'This app is not authorized to use the current Firebase configuration on this domain.',
+      'auth/argument-error': 'Firebase sign-in configuration is incomplete on the live site.',
+      'auth/operation-not-supported-in-this-environment': 'This browser environment cannot open the sign-in popup. Try a normal browser window.',
+      'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
+    };
+
+    if (knownMessages[code]) {
+      return knownMessages[code];
     }
-    return fallback;
+
+    return code ? `${fallback} (${code})` : fallback;
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -84,6 +97,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSignup, onBackToHome
       onSignup();
     } catch (err: any) {
       const code = err?.code ?? '';
+      console.error('Google signup failed:', err);
       if (code === 'auth/popup-closed-by-user') {
         return;
       }
@@ -109,6 +123,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSignup, onBackToHome
       onSignup();
     } catch (err: any) {
       const code = err?.code ?? '';
+      console.error('GitHub signup failed:', err);
       if (code === 'auth/popup-closed-by-user') {
         return;
       }
