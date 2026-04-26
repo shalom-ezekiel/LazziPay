@@ -1,14 +1,30 @@
 
 import { GoogleGenAI, Type, Modality } from "@google/genai";
-import { VoiceIntent } from "./types";
+import { VoiceIntent, IndustryType } from "./types";
+import { buildSystemPrompt, getIndustryConfig } from "./config/industryConfig";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-export async function extractIntent(text: string, panicWord: string): Promise<VoiceIntent> {
-  if (text.toLowerCase().includes(panicWord.toLowerCase())) {
+/**
+ * Extract intent from text using Gemini AI, dynamically configured per industry.
+ * 
+ * This is the core brain of Lazzi — it understands what the user wants
+ * regardless of how they phrase it, across any industry.
+ */
+export async function extractIntent(
+  text: string,
+  options: {
+    industry: IndustryType;
+    assistantName: string;
+    panicWord?: string;
+    customInstructions?: string;
+  }
+): Promise<VoiceIntent> {
+  // Panic word check (instant, no AI needed)
+  if (options.panicWord && text.toLowerCase().includes(options.panicWord.toLowerCase())) {
     return {
       action: 'panic_trigger',
-      confidence: 1.0
+      confidence: 1.0,
     };
   }
 
@@ -18,22 +34,40 @@ export async function extractIntent(text: string, panicWord: string): Promise<Vo
   }
 
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const industryConfig = getIndustryConfig(options.industry);
+
+  // Build dynamic system prompt based on industry
+  const systemPrompt = buildSystemPrompt(
+    options.industry,
+    options.assistantName,
+    options.customInstructions
+  );
+
+  // Build the list of valid action IDs for this industry
+  const validActions = [
+    ...industryConfig.intents.map(i => i.id),
+    'affirmation',
+    'negation',
+    'customer_support',
+    'unknown',
+  ];
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `You are a banking intent classifier for LazziPay. 
-      Current Text: "${text}"
-      
-      INTENT MAPPING RULES:
-      - Balance: "how much do I have", "balance", "account status" -> action: "show_balance".
-      - Transfer: "send", "transfer", "pay" -> action: "transfer_money".
-      - Affirmative: "yes", "yeah", "do it", "please", "read it", "ok", "correct" -> action: "affirmation".
-      - Negative: "no", "stop", "cancel", "don't" -> action: "negation".
-      - Other: Small talk or unrelated phrases -> action: "unknown".
+      model: 'gemini-2.5-flash-preview-05-20',
+      contents: `${systemPrompt}
 
-      Confidence should be a float between 0.0 and 1.0.
-      Respond ONLY in valid JSON.`,
+Current user input: "${text}"
+
+Valid action values: ${validActions.join(', ')}
+
+Respond with a JSON object containing:
+- action: one of the valid action values
+- confidence: float 0.0 to 1.0
+- amount: number if mentioned (null otherwise)
+- recipient: string if mentioned (null otherwise)
+- extractedFields: object with any other extracted data
+- supportAnswer: string if action is "customer_support" (the AI answer to the question)`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -42,11 +76,17 @@ export async function extractIntent(text: string, panicWord: string): Promise<Vo
             action: { type: Type.STRING },
             amount: { type: Type.NUMBER, nullable: true },
             recipient: { type: Type.STRING, nullable: true },
-            confidence: { type: Type.NUMBER }
+            confidence: { type: Type.NUMBER },
+            extractedFields: {
+              type: Type.OBJECT,
+              nullable: true,
+              properties: {},
+            },
+            supportAnswer: { type: Type.STRING, nullable: true },
           },
-          required: ["action", "confidence"]
-        }
-      }
+          required: ["action", "confidence"],
+        },
+      },
     });
 
     const result = JSON.parse(response.text || '{}');
@@ -56,6 +96,45 @@ export async function extractIntent(text: string, panicWord: string): Promise<Vo
     return { action: 'unknown', confidence: 0 };
   }
 }
+
+/**
+ * Generate a conversational response for the assistant.
+ * Used for customer support answers, confirmations, and follow-ups.
+ */
+export async function generateResponse(
+  context: string,
+  options: {
+    industry: IndustryType;
+    assistantName: string;
+    customInstructions?: string;
+  }
+): Promise<string> {
+  if (!GEMINI_API_KEY) {
+    return "I'm having trouble connecting right now. Please try again.";
+  }
+
+  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-preview-05-20',
+      contents: `You are "${options.assistantName}", a friendly voice assistant for ${options.industry}.
+${options.customInstructions || ''}
+
+Respond naturally and concisely (1-2 sentences max) to:
+${context}`,
+    });
+
+    return response.text || "I'm not sure how to respond to that. Can you try again?";
+  } catch (error) {
+    console.error("Gemini Response Error:", error);
+    return "I'm having trouble right now. Please try again shortly.";
+  }
+}
+
+// ─────────────────────────────────────────────
+// Text-to-Speech (Gemini TTS)
+// ─────────────────────────────────────────────
 
 let audioCtx: AudioContext | null = null;
 
