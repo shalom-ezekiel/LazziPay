@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { PlanType } from '../types';
 import { DEMO_PARTNERS } from '../config/partnerConfig';
 import { INDUSTRY_REGISTRY } from '../config/industryConfig';
-import { 
-  CheckCircle2, ArrowRight, Zap, Cpu, 
+import {
+  CheckCircle2, ArrowRight, Zap, Cpu,
   Shield, MessageSquare, Activity,
   Mic, Code, Clock, Globe,
   Building2, PiggyBank, MousePointerClick
@@ -23,12 +23,8 @@ const LazziLogo = () => (
 );
 
 const DashboardPreview = () => (
-  <div className="mt-12 w-full max-w-5xl mx-auto perspective-1000 px-4">
-    <div className="bg-white rounded-[1.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] border border-slate-200 overflow-hidden transform hover:-rotate-x-1 transition-transform duration-700">
-      <div className="flex overflow-hidden bg-slate-50">
-        <img src="/images/Dashboard.png" alt="Lazzi Dashboard Preview" className="w-full h-auto object-cover block" />
-      </div>
-    </div>
+  <div className="mt-12 w-full max-w-6xl mx-auto px-0 sm:px-4">
+    <img src="/images/Dashboard.png" alt="Lazzi Dashboard Preview" className="w-full h-auto block" />
   </div>
 );
 
@@ -42,46 +38,48 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
   const [activeUseCase, setActiveUseCase] = useState<string>('banking');
 
   const integrations = [
-    "Arcline", "Vantage", "NovaPay", "Trivot", "Savora", "Streamline", 
-    "ClearPath CX", "Volt Grid", 
-    "Apex Gov", "TrustNet", "FleetRun", "Voyager", 
+    "Arcline", "Vantage", "NovaPay", "Trivot", "Savora", "Streamline",
+    "ClearPath CX", "Volt Grid",
+    "Apex Gov", "TrustNet", "FleetRun", "Voyager",
     "Sentinel Insurance", "CoreShield"
   ];
 
   return (
     <div className="bg-white overflow-hidden">
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20 px-6 flex flex-col items-center">
+      <section className="relative pt-8 md:pt-20 pb-10 md:pb-20 px-6 flex flex-col items-center">
         <div className="absolute top-10 left-1/4 w-[500px] h-[500px] bg-blue-400/10 animate-blob pointer-events-none blur-[100px]"></div>
         <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-purple-400/10 animate-blob pointer-events-none blur-[100px]" style={{ animationDelay: '-5s' }}></div>
 
         <div className="max-w-6xl mx-auto text-center relative z-10 w-full">
-          <div className="flex justify-center mb-6 opacity-0 animate-text-reveal stagger-1">
-            <span className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md text-blue-700 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100 shadow-sm">
-              Voice Intent Layer for Finance
+          <div className="flex justify-center mb-4 md:mb-6 opacity-0 animate-text-reveal stagger-1">
+            <span className="inline-flex items-center gap-3 bg-white px-2 py-1.5 rounded-full text-sm border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+              <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wide">• New</span>
+              <span className="text-slate-600 font-semibold text-[13px]">Voice Intent Layer for Finance</span>
+              <ArrowRight size={14} className="text-slate-400 mr-1" />
             </span>
           </div>
-          
-          <div className="overflow-hidden mb-6">
-            <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter opacity-0 animate-text-reveal stagger-2">
+
+          <div className="overflow-hidden mb-4 md:mb-6">
+            <h1 className="text-3xl md:text-7xl font-black text-slate-900 leading-[1.15] tracking-tighter opacity-0 animate-text-reveal stagger-2">
               The Voice Intent Layer <br />
-              <span className="text-blue-600">for Fintechs</span>
+              <span className="text-blue-600">for Fintechs.</span>
             </h1>
           </div>
 
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-text-reveal stagger-3 font-medium">
+          <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed opacity-0 animate-text-reveal stagger-3 font-medium">
             Lazzi integrates easily into your product and lets users complete financial tasks by speaking — reducing friction and improving user experience.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 opacity-0 animate-text-reveal stagger-4">
-            <button 
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-4 opacity-0 animate-text-reveal stagger-4">
+            <button
               onClick={() => onPlanSelected(PlanType.CORE)}
-              className="group w-full sm:w-auto bg-blue-600 text-white px-8 py-4 rounded-xl text-base font-bold hover:bg-blue-700 transition-all duration-300 shadow-xl shadow-blue-400/20 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-95"
+              className="group w-full sm:w-auto bg-blue-600 text-white px-8 py-3.5 md:py-4 rounded-full text-base font-bold hover:bg-blue-700 transition-all duration-300 shadow-xl shadow-blue-400/20 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-95"
             >
               Start for Free <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-xl text-base font-bold hover:bg-slate-50 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-95">
-              Book a Demo
+            <button className="w-auto text-slate-600 text-base font-semibold hover:text-blue-600 transition-colors">
+              See How It Works
             </button>
           </div>
 
@@ -127,11 +125,10 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               <button
                 key={id}
                 onClick={() => setActiveUseCase(id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border ${
-                  activeUseCase === id
-                    ? 'text-white border-transparent shadow-lg -translate-y-0.5'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
-                }`}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border ${activeUseCase === id
+                  ? 'text-white border-transparent shadow-lg -translate-y-0.5'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
+                  }`}
                 style={activeUseCase === id ? { backgroundColor: data.color } : {}}
               >
                 {data.icon}
@@ -217,7 +214,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Integration Code</span>
                 </div>
                 <pre className="p-6 text-xs text-blue-400 font-mono overflow-x-auto leading-relaxed">
-{`<script src="https://cdn.lazzi.ai/sdk/v1/lazzi.js">
+                  {`<script src="https://cdn.lazzi.ai/sdk/v1/lazzi.js">
 </script>
 <script>
   Lazzi.init({
@@ -381,10 +378,10 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 text-center">Before</p>
                     <div className="space-y-2">
-                      {[1,2,3,4,5].map(i => (
+                      {[1, 2, 3, 4, 5].map(i => (
                         <div key={i} className="flex items-center gap-2">
                           <div className="w-4 h-4 rounded bg-slate-200 flex items-center justify-center">
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
                           </div>
                           <div className="h-2.5 rounded-full bg-slate-200 flex-1" style={{ width: `${65 + i * 5}%` }} />
                         </div>
