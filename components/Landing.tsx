@@ -68,7 +68,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
           </div>
 
           <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6 md:mb-10 leading-relaxed opacity-0 animate-text-reveal stagger-3 font-medium">
-            Lazzi integrates easily into your product and lets users complete financial tasks by speaking — reducing friction and improving user experience.
+            Lazzi integrates easily into your product and lets users complete financial tasks by speaking reducing friction and improving user experience.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-4 opacity-0 animate-text-reveal stagger-4">
@@ -116,7 +116,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               Voice-Powered Finance
             </div>
             <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Speak It. Lazzi Does It.</h2>
-            <p className="text-slate-600 max-w-xl mx-auto text-base font-medium">Users say what they want in natural language. Lazzi classifies the intent and prepares the action — faster transactions, fewer clicks, easier navigation.</p>
+            <p className="text-slate-600 max-w-xl mx-auto text-base font-medium">Users say what they want in natural language. Lazzi classifies the intent and prepares the action faster transactions, fewer clicks, easier navigation.</p>
           </div>
 
           {/* Use Case Tabs */}
@@ -199,7 +199,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
                 Integrate Lazzi Into Your <br /><span className="text-blue-600">Application Seamlessly</span>
               </h2>
               <p className="text-base text-slate-600 mb-8 leading-relaxed font-medium">
-                Lazzi integrates into your app as a voice intent layer, allowing users to complete actions using natural speech — fully customizable to your brand and workflows.
+                Lazzi integrates into your app as a voice intent layer, allowing users to complete actions using natural speech fully customizable to your brand and workflows.
               </p>
               <ul className="space-y-6">
                 <SafeStep number="01" title="Install the SDK" description="Add Lazzi to your application using our client SDK." />
@@ -339,7 +339,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               </div>
               <div className="p-8 pt-6">
                 <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Intent AI, not keywords</h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed">Lazzi understands messy, real-world speech — fillers, slang, half-thoughts — and turns it into action.</p>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Lazzi understands messy, real-world speech fillers, slang, half-thoughts and turns it into action.</p>
               </div>
             </div>
 
@@ -366,7 +366,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               </div>
               <div className="p-8 pt-6">
                 <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">White-Label, fully yours</h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed">Ship a voice assistant that wears your brand — your name, your colors, your voice. We stay invisible.</p>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Ship a voice assistant that wears your brand your name, your colors, your voice. We stay invisible.</p>
               </div>
             </div>
 
@@ -412,7 +412,7 @@ const Landing: React.FC<LandingProps> = ({ onPlanSelected }) => {
               </div>
               <div className="p-8 pt-6">
                 <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Fewer clicks, more flow</h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed">Voice replaces forms, menus and dropdowns. Your users speak — Lazzi handles the rest.</p>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">Voice replaces forms, menus and dropdowns. Your users speak Lazzi handles the rest.</p>
               </div>
             </div>
 
